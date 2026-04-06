@@ -289,39 +289,49 @@ function App() {
               </div>
             </div>
 
-            <div className="card">
-              <div className="section-title">
-                6 Months Tracker
-              </div>
-              <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
-                Showing consistency over the last 180 days.
-              </p>
-              {/* Simplified Heatmap representation */}
-              <div className="heatmap">
-                {Array.from({ length: 180 }).map((_, i) => {
-                  const d = format(subDays(today, 179 - i), 'yyyy-MM-dd');
-                  const count = stats.filter(s => s.date === d).length;
-                  let level = 0;
-                  if(count === 1) level = 1;
-                  else if(count === 2) level = 2;
-                  else if(count >= 3) level = 4;
-
-                  return (
-                    <motion.div 
-                      key={i} 
-                      className="heatmap-cell" 
-                      data-level={level}
-                      title={`${d}: ${count} habits`}
-                      whileHover={{ scale: 1.5 }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-            
           </motion.div>
 
         </div>
+
+        {/* 6 Months Heatmap spans full width at the bottom */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="card" 
+          style={{marginTop: '2rem'}}
+        >
+          <div className="section-title">
+            6 Months Tracker
+          </div>
+          <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
+            Showing consistency over the last 182 days. Color intensity mimics Github commit patterns.
+          </p>
+          <div className="heatmap-container">
+            <div className="heatmap">
+              {Array.from({ length: 182 }).map((_, i) => {
+                // To flow top-to-bottom, left-to-right, index 0 is oldest day
+                const d = format(subDays(today, 181 - i), 'yyyy-MM-dd');
+                const count = stats.filter(s => s.date === d).length;
+                let level = 0;
+                if(count === 1) level = 1;
+                else if(count === 2) level = 2;
+                else if(count === 3) level = 3;
+                else if(count >= 4) level = 4;
+
+                return (
+                  <motion.div 
+                    key={i} 
+                    className="heatmap-cell" 
+                    data-level={level}
+                    title={`${d}: ${count} habits completed`}
+                    whileHover={{ scale: 1.5 }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
       </main>
     </div>
   );
