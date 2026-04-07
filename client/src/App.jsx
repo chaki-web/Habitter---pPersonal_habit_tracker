@@ -32,11 +32,32 @@ import './App.css';
 
 const API_URL = 'http://localhost:3001/api';
 
+const MOTIVATIONAL_QUOTES = [
+  "Small daily improvements are the key to staggering long-term results.",
+  "You do not rise to the level of your goals. You fall to the level of your systems.",
+  "Success is the product of daily habits—not once-in-a-lifetime transformations.",
+  "Every action you take is a vote for the type of person you wish to become.",
+  "Discipline is choosing between what you want now and what you want most.",
+  "Motivation is what gets you started. Habit is what keeps you going.",
+  "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+  "Don't break the chain. Keep the momentum going.",
+  "The secret to getting ahead is getting started.",
+  "Your future is created by what you do today, not tomorrow."
+];
+
 function App() {
   const [habits, setHabits] = useState([]);
   const [stats, setStats] = useState([]);
   const [newHabit, setNewHabit] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuoteIndex((prev) => (prev + 1) % MOTIVATIONAL_QUOTES.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Get last 7 days for the main tracking view
   const today = new Date();
@@ -158,6 +179,22 @@ function App() {
       </header>
 
       <main className="main-content">
+        {/* Quotes Carousel */}
+        <div className="quotes-container">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentQuoteIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5 }}
+              className="quote-text"
+            >
+              "{MOTIVATIONAL_QUOTES[currentQuoteIndex]}"
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
         <div className="dashboard-grid">
           
           {/* Main Habits Section */}

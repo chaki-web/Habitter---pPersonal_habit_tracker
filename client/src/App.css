@@ -210,3 +210,28 @@
   margin-bottom: 1rem;
   color: var(--border-color);
 }
+
+/* Quotes Carousel */
+.quotes-container {
+  text-align: center;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  background: var(--surface-color, #f9fafb);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--border-color);
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.quote-text {
+  font-size: 1.125rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--text-primary);
+  max-width: 800px;
+  width: 100%;
+}
+
