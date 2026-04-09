@@ -343,13 +343,13 @@ function App() {
             6 Months Tracker
           </div>
           <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem'}}>
-            Showing tracking consistency for the next 182 days. Color intensity mimics Github commit patterns.
+            Showing tracking consistency for the last 6 months (182 days). Color intensity mimics Github commit patterns.
           </p>
           <div className="heatmap-container">
             <div className="heatmap">
               {Array.from({ length: 182 }).map((_, i) => {
-                // To flow top-to-bottom, left-to-right, index 0 is today
-                const d = format(addDays(today, i), 'yyyy-MM-dd');
+                // To flow top-to-bottom, left-to-right, index 181 is today
+                const d = format(subDays(today, 181 - i), 'yyyy-MM-dd');
                 const count = stats.filter(s => s.date === d).length;
                 let level = 0;
                 if(count === 1) level = 1;
