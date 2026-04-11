@@ -184,10 +184,10 @@ function App() {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuoteIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, filter: 'blur(8px)', y: 10 }}
+              animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+              exit={{ opacity: 0, filter: 'blur(8px)', y: -10 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="quote-text"
             >
               "{MOTIVATIONAL_QUOTES[currentQuoteIndex]}"
@@ -199,9 +199,9 @@ function App() {
           
           {/* Main Habits Section */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 20 }}
           >
             <div className="section-title">
               Your Habits
@@ -233,15 +233,21 @@ function App() {
                 <p>Start tracking your first habit to see your progress.</p>
               </div>
             ) : (
-              <div className="habit-list">
+              <motion.div layout className="habit-list">
                 <AnimatePresence>
                   {habits.map((habit, index) => (
                     <motion.div 
+                      layout
                       key={habit.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ delay: index * 0.05 }}
+                      initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9, filter: 'blur(4px)' }}
+                      transition={{ 
+                        type: 'spring', 
+                        stiffness: 300, 
+                        damping: 25, 
+                        delay: index * 0.05 
+                      }}
                       className="habit-card"
                     >
                       <div className="habit-info">
@@ -263,15 +269,16 @@ function App() {
                           
                           return (
                             <motion.div
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                              whileHover={{ scale: 1.15 }}
+                              whileTap={{ scale: 0.85 }}
+                              transition={{ type: "spring", stiffness: 400, damping: 17 }}
                               key={dateStr}
                               className={`day-box ${isCompleted ? 'completed' : ''}`}
                               onClick={() => toggleHabit(habit.id, date)}
                               style={isToday ? { borderBottom: '2px solid var(--accent-color)' } : {}}
                               title={format(date, 'MMM d, yyyy')}
                             >
-                              {isCompleted ? <Check size={16} /> : format(date, 'E')[0]}
+                              {isCompleted ? <motion.div initial={{scale: 0}} animate={{scale: 1}} transition={{type: 'spring', stiffness: 300}}><Check size={16} /></motion.div> : format(date, 'E')[0]}
                             </motion.div>
                           );
                         })}
@@ -279,15 +286,15 @@ function App() {
                     </motion.div>
                   ))}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             )}
           </motion.div>
 
           {/* Sidebar / Stats Section */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.1 }}
             style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}
           >
             <div className="card stats-card">
@@ -333,9 +340,9 @@ function App() {
 
         {/* 6 Months Heatmap spans full width at the bottom */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ type: 'spring', stiffness: 100, damping: 20, delay: 0.2 }}
           className="card" 
           style={{marginTop: '2rem'}}
         >
@@ -346,7 +353,19 @@ function App() {
             Showing tracking consistency for the last 6 months (182 days). Color intensity mimics Github commit patterns.
           </p>
           <div className="heatmap-container">
-            <div className="heatmap">
+            <motion.div 
+              className="heatmap"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                visible: {
+                  transition: {
+                    staggerChildren: 0.003
+                  }
+                }
+              }}
+            >
               {Array.from({ length: 182 }).map((_, i) => {
                 // To flow top-to-bottom, left-to-right, index 181 is today
                 const d = format(subDays(today, 181 - i), 'yyyy-MM-dd');
@@ -360,14 +379,19 @@ function App() {
                 return (
                   <motion.div 
                     key={i} 
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.2 },
+                      visible: { opacity: 1, scale: 1 }
+                    }}
                     className="heatmap-cell" 
                     data-level={level}
                     title={`${d}: ${count} habits completed`}
-                    whileHover={{ scale: 1.5 }}
+                    whileHover={{ scale: 1.4 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   />
                 );
               })}
-            </div>
+            </motion.div>
           </div>
         </motion.div>
       </main>

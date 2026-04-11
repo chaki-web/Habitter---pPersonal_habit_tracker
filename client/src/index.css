@@ -105,6 +105,10 @@ a {
   transform: scale(1.02);
 }
 
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
 .text-gradient {
   background: linear-gradient(135deg, #000000 0%, #434343 100%);
   -webkit-background-clip: text;
