@@ -215,7 +215,7 @@ function App() {
                 type="text"
                 className="add-habit-input"
                 style={{marginBottom: 0}}
-                placeholder="What new habit do you want to start?"
+                placeholder="What new habit will you start today?"
                 value={newHabit}
                 onChange={(e) => setNewHabit(e.target.value)}
               />
