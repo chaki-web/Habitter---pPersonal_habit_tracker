@@ -228,8 +228,10 @@ function App() {
           translateY: cursorYSpring,
         }}
         animate={{
-          scale: isHovering ? 1.5 : 1,
-          backgroundColor: isHovering ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.03)',
+          scale: isHovering ? 2.5 : 1,
+          backgroundColor: isHovering ? 'rgba(255, 255, 255, 0)' : 'rgba(0, 0, 0, 0.03)',
+          backdropFilter: isHovering ? 'blur(0px) saturate(150%) contrast(110%)' : 'blur(4px) saturate(100%) contrast(100%)',
+          WebkitBackdropFilter: isHovering ? 'blur(0px) saturate(150%) contrast(110%)' : 'blur(4px) saturate(100%) contrast(100%)',
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       />

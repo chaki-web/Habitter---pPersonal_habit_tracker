@@ -254,14 +254,23 @@
   height: 48px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.03);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(0, 0, 0, 0.05);
   pointer-events: none;
   z-index: 9999;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   transform-origin: center;
 }
+
+/* Subtle physical magnification on hover for text elements */
+.quote-text, .section-title, .habit-name {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transform-origin: center left;
+}
+
+.quote-text:hover, .section-title:hover, .habit-name:hover {
+  transform: scale(1.02);
+}
+
 
 .cursor-dot {
   position: fixed;
