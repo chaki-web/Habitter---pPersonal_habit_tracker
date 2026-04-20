@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { 
   format, 
   eachDayOfInterval, 
@@ -51,6 +51,39 @@ function App() {
   const [newHabit, setNewHabit] = useState('');
   const [loading, setLoading] = useState(true);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
+  const [isHovering, setIsHovering] = useState(false);
+
+  // -- Custom Cursor Logic --
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const dotX = useMotionValue(-100);
+  const dotY = useMotionValue(-100);
+  
+  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
+  useEffect(() => {
+    const moveCursor = (e) => {
+      cursorX.set(e.clientX - 24);
+      cursorY.set(e.clientY - 24);
+      dotX.set(e.clientX - 4);
+      dotY.set(e.clientY - 4);
+    };
+    
+    const handleMouseOver = (e) => {
+      const isClickable = e.target.closest('button, a, input, .day-box, .heatmap-cell');
+      setIsHovering(!!isClickable);
+    };
+
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', handleMouseOver);
+    
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('mouseover', handleMouseOver);
+    };
+  }, [cursorX, cursorY, dotX, dotY]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -168,6 +201,32 @@ function App() {
 
   return (
     <div className="app-layout">
+      {/* Custom Cursor */}
+      <motion.div
+        className="cursor-ring"
+        style={{
+          translateX: cursorXSpring,
+          translateY: cursorYSpring,
+        }}
+        animate={{
+          scale: isHovering ? 1.4 : 1,
+          backgroundColor: isHovering ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.03)',
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      />
+      <motion.div
+        className="cursor-dot"
+        style={{
+          translateX: dotX,
+          translateY: dotY,
+        }}
+        animate={{
+          scale: isHovering ? 0 : 1,
+          opacity: isHovering ? 0 : 1
+        }}
+        transition={{ duration: 0.2 }}
+      />
+
       <header className="header">
         <div className="logo text-gradient">
           <Activity size={28} color="#000" />

@@ -235,3 +235,45 @@
   width: 100%;
 }
 
+/* Custom Cursor styles */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  
+  a, button, input, textarea, select, .day-box, .heatmap-cell {
+    cursor: none !important;
+  }
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transform-origin: center;
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  pointer-events: none;
+  z-index: 10000;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  transform-origin: center;
+}
+
