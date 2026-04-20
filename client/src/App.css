@@ -270,10 +270,10 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent-color);
+  background: white;
   pointer-events: none;
   z-index: 10000;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  mix-blend-mode: difference;
   transform-origin: center;
 }
 

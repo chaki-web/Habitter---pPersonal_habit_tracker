@@ -17,7 +17,8 @@ import {
   Check, 
   TrendingUp, 
   BarChart3, 
-  Target 
+  Target,
+  Zap
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -52,6 +53,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
   const [isHovering, setIsHovering] = useState(false);
+  const [particles, setParticles] = useState([]);
 
   // -- Custom Cursor Logic --
   const cursorX = useMotionValue(-100);
@@ -72,16 +74,33 @@ function App() {
     };
     
     const handleMouseOver = (e) => {
-      const isClickable = e.target.closest('button, a, input, .day-box, .heatmap-cell');
-      setIsHovering(!!isClickable);
+      // Includes text elements as interactive so the bubble magnifies over them
+      const isInteractive = e.target.closest('button, a, input, .day-box, .heatmap-cell, p, span, h1, h2, h3, h4, h5, h6, .logo, .quote-text, label, .habit-name, .section-title, .stat-value, .stat-label');
+      setIsHovering(!!isInteractive);
+    };
+
+    const handleMouseClick = (e) => {
+      const newParticles = Array.from({ length: 6 }).map((_, i) => ({
+        id: Date.now() + i + Math.random(),
+        x: e.clientX,
+        y: e.clientY,
+        angle: (i * 360) / 6 + (Math.random() * 20 - 10)
+      }));
+      setParticles(prev => [...prev, ...newParticles]);
+      
+      setTimeout(() => {
+        setParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
+      }, 600);
     };
 
     window.addEventListener('mousemove', moveCursor);
     window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('click', handleMouseClick);
     
     return () => {
       window.removeEventListener('mousemove', moveCursor);
       window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('click', handleMouseClick);
     };
   }, [cursorX, cursorY, dotX, dotY]);
 
@@ -209,7 +228,7 @@ function App() {
           translateY: cursorYSpring,
         }}
         animate={{
-          scale: isHovering ? 1.4 : 1,
+          scale: isHovering ? 1.5 : 1,
           backgroundColor: isHovering ? 'rgba(0, 0, 0, 0.08)' : 'rgba(0, 0, 0, 0.03)',
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -226,6 +245,35 @@ function App() {
         }}
         transition={{ duration: 0.2 }}
       />
+
+      {/* Click Thunder Splash Effects */}
+      <AnimatePresence>
+        {particles.map(p => (
+          <motion.div
+            key={p.id}
+            initial={{ x: p.x, y: p.y, scale: 0, opacity: 1, rotate: p.angle }}
+            animate={{ 
+              x: p.x + Math.cos(p.angle * Math.PI / 180) * 100, 
+              y: p.y + Math.sin(p.angle * Math.PI / 180) * 100,
+              scale: [0, 1.2, 0],
+              opacity: [1, 1, 0],
+              rotate: p.angle + 45
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{
+              position: 'fixed',
+              left: -12,
+              top: -12,
+              pointerEvents: 'none',
+              zIndex: 10001,
+              color: '#facc15'
+            }}
+          >
+            <Zap size={24} fill="#facc15" />
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
       <header className="header">
         <div className="logo text-gradient">
