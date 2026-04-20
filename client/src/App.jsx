@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
 import { 
   format, 
   eachDayOfInterval, 
@@ -54,6 +54,13 @@ function App() {
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
   const [isHovering, setIsHovering] = useState(false);
   const [particles, setParticles] = useState([]);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // -- Custom Cursor Logic --
   const cursorX = useMotionValue(-100);
@@ -67,8 +74,8 @@ function App() {
 
   useEffect(() => {
     const moveCursor = (e) => {
-      cursorX.set(e.clientX - 24);
-      cursorY.set(e.clientY - 24);
+      cursorX.set(e.clientX - 90);
+      cursorY.set(e.clientY - 90);
       dotX.set(e.clientX - 4);
       dotY.set(e.clientY - 4);
     };
@@ -218,64 +225,14 @@ function App() {
     };
   });
 
-  return (
-    <div className="app-layout">
-      {/* Custom Cursor */}
-      <motion.div
-        className="cursor-ring"
-        style={{
-          translateX: cursorXSpring,
-          translateY: cursorYSpring,
-        }}
-        animate={{
-          scale: isHovering ? 2.5 : 1,
-          backgroundColor: isHovering ? 'rgba(255, 255, 255, 0)' : 'rgba(0, 0, 0, 0.03)',
-          backdropFilter: isHovering ? 'blur(0px) saturate(150%) contrast(110%)' : 'blur(4px) saturate(100%) contrast(100%)',
-          WebkitBackdropFilter: isHovering ? 'blur(0px) saturate(150%) contrast(110%)' : 'blur(4px) saturate(100%) contrast(100%)',
-        }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      />
-      <motion.div
-        className="cursor-dot"
-        style={{
-          translateX: dotX,
-          translateY: dotY,
-        }}
-        animate={{
-          scale: isHovering ? 0 : 1,
-          opacity: isHovering ? 0 : 1
-        }}
-        transition={{ duration: 0.2 }}
-      />
+  const innerX = useTransform(cursorXSpring, x => -x);
+  const innerY = useTransform(cursorYSpring, y => -y);
+  const originX = useTransform(cursorXSpring, x => x + 90);
+  const originY = useTransform(cursorYSpring, y => y + 90);
+  const transformOrigin = useMotionTemplate`${originX}px ${originY}px`;
 
-      {/* Click Thunder Splash Effects */}
-      <AnimatePresence>
-        {particles.map(p => (
-          <motion.div
-            key={p.id}
-            initial={{ x: p.x, y: p.y, scale: 0, opacity: 1, rotate: p.angle }}
-            animate={{ 
-              x: p.x + Math.cos(p.angle * Math.PI / 180) * 100, 
-              y: p.y + Math.sin(p.angle * Math.PI / 180) * 100,
-              scale: [0, 1.2, 0],
-              opacity: [1, 1, 0],
-              rotate: p.angle + 45
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            style={{
-              position: 'fixed',
-              left: -12,
-              top: -12,
-              pointerEvents: 'none',
-              zIndex: 10001,
-              color: '#facc15'
-            }}
-          >
-            <Zap size={24} fill="#facc15" />
-          </motion.div>
-        ))}
-      </AnimatePresence>
+  const appContent = (
+    <>
 
       <header className="header">
         <div className="logo text-gradient">
@@ -504,6 +461,103 @@ function App() {
           </div>
         </motion.div>
       </main>
+    </>
+  );
+
+  return (
+    <div className="app-layout">
+      {/* Scroll context for duplicate app */}
+      <div style={{ visibility: 'visible' }}>
+        {appContent}
+      </div>
+
+      {/* REAL MAGNIFIER GLASS */}
+      <motion.div
+        className="magnifier-ring"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: 180,
+          height: 180,
+          borderRadius: '50%',
+          overflow: 'hidden',
+          pointerEvents: 'none',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.2), inset 0 0 15px rgba(0,0,0,0.1)',
+          border: '2px solid rgba(255,255,255,0.7)',
+          translateX: cursorXSpring,
+          translateY: cursorYSpring,
+          background: 'var(--bg-color)',
+          zIndex: 9998
+        }}
+        animate={{
+          scale: isHovering ? 1 : 0.3, // grows huge on hover
+          opacity: 1
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      >
+        <motion.div
+           style={{
+             position: 'absolute',
+             top: 0,
+             left: 0,
+             width: '100vw',
+             height: '100vh',
+             x: innerX,
+             y: innerY,
+             scale: 1.5, // The MAGNIFICATION Power
+             transformOrigin: transformOrigin,
+             pointerEvents: 'none'
+           }}
+        >
+          {/* Apply scroll offset so duplicate matches viewport perfectly */}
+          <div className="app-layout" style={{ position: 'relative', top: -scrollY, minHeight: '100vh' }}>
+            {appContent}
+          </div>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        className="cursor-dot"
+        style={{
+          translateX: dotX,
+          translateY: dotY,
+        }}
+        animate={{
+          scale: isHovering ? 0 : 1,
+          opacity: isHovering ? 0 : 1
+        }}
+        transition={{ duration: 0.2 }}
+      />
+
+      {/* Click Thunder Splash Effects */}
+      <AnimatePresence>
+        {particles.map(p => (
+          <motion.div
+            key={p.id}
+            initial={{ x: p.x, y: p.y, scale: 0, opacity: 1, rotate: p.angle }}
+            animate={{ 
+              x: p.x + Math.cos(p.angle * Math.PI / 180) * 100, 
+              y: p.y + Math.sin(p.angle * Math.PI / 180) * 100,
+              scale: [0, 1.2, 0],
+              opacity: [1, 1, 0],
+              rotate: p.angle + 45
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{
+              position: 'fixed',
+              left: -12,
+              top: -12,
+              pointerEvents: 'none',
+              zIndex: 10001,
+              color: '#facc15'
+            }}
+          >
+            <Zap size={24} fill="#facc15" />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
