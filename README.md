@@ -37,3 +37,5 @@ Welcome to your insanely polished, white-themed habit tracking dashboard. Habitt
 
 Your server spins on `http://localhost:3001/` and your client on `http://localhost:5173/`. 
 All systems are currently running in the background. Open your browser and navigate to the client to begin!
+
+Happy habit tracking!
