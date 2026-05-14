@@ -1,0 +1,5 @@
+This is the text document to close out Issue #1
+
+Inside of the commit description, I can reference this issue
+
+This is not only good for hyperlinking, but also for a solid activity
