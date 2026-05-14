@@ -1,4 +1,4 @@
-This is the text document to close out Issue #30
+This is the text document to close out Issue #1
 
 Inside of the commit description, I can reference this issue
 
